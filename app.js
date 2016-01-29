@@ -18,6 +18,11 @@ weatherApp.config(function ($routeProvider) {
         templateUrl: 'pages/forecast.html',
         controller: 'forecastCtrl'
     })
+    
+    .when('/forecast/:days', {
+        templateUrl: 'pages/forecast.html',
+        controller: 'forecastCtrl'
+    })
 });
 
 //services
@@ -41,9 +46,11 @@ weatherApp.controller('homeCtrl',['$scope', 'cityService', function($scope, city
 }]);
 
 
-weatherApp.controller('forecastCtrl', ['$scope', '$resource' ,'cityService', function($scope,$resource, cityService) {
+weatherApp.controller('forecastCtrl', ['$scope', '$resource' ,'cityService', '$routeParams', function($scope,$resource, cityService, $routeParams) {
     
     $scope.city = cityService.city;
+    
+    $scope.days = $routeParams.days || '2';
     
     $scope.weatherApi = $resource("http://api.openweathermap.org/data/2.5/forecast/daily", 
     { callback: "JSON_CALLBACK" }, 
@@ -51,7 +58,7 @@ weatherApp.controller('forecastCtrl', ['$scope', '$resource' ,'cityService', fun
     
     $scope.weatherResult = $scope.weatherApi.get({
         q: $scope.city,
-        cnt: 7,
+        cnt: $scope.days,
         appid: "f3988637806bfbb1e77b057704da9cc3"     
     });
     
@@ -62,6 +69,14 @@ weatherApp.controller('forecastCtrl', ['$scope', '$resource' ,'cityService', fun
        
     }
     
+    $scope.convertToDate = function(dt) {
+        
+        return new Date(dt * 1000);
+        
+    }   
+    
+    console.log($scope.weatherResult);
+     
 }]);
 
 // f3988637806bfbb1e77b057704da9cc3
